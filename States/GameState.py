@@ -554,8 +554,34 @@ class GameState(State):
     #   with the ones after it. Depending on the mode, sort by rank first or suit first, swapping cards when needed
     #   until the entire hand is ordered correctly.
     def SortCards(self, sort_by: str = "suit"):
-        suitOrder = [Suit.HEARTS, Suit.CLUBS, Suit.DIAMONDS, Suit.SPADES]         # Define the order of suits
+        suitOrder = [Suit.HEARTS, Suit.CLUBS, Suit.DIAMONDS, Suit.SPADES]
+
+        if sort_by == "":
+            return
+        elif sort_by == "rank":
+            sort_suits = False
+        elif sort_by == "suit":
+            sort_suits = True
+        else:
+            raise IOError("sort_by must be 'rank', 'suit' or ''")
+
+        def suit_index(card):
+            return suitOrder.index(card.suit)
+
+        def card_key(card):
+            if sort_suits:
+                return (suit_index(card), -card.rank.value)
+            else:
+                return (-card.rank.value, suit_index(card))
+
+        n = len(self.hand)
+        for i in range(n):
+            for j in range(0, n - 1):
+                if card_key(self.hand[j + 1]) < card_key(self.hand[j]):
+                    self.hand[j], self.hand[j + 1] = self.hand[j + 1], self.hand[j]
+
         self.updateCards(400, 520, self.cards, self.hand, scale=1.2)
+
 
     def checkHoverCards(self):
         mousePos = pygame.mouse.get_pos()
