@@ -843,4 +843,22 @@ class GameState(State):
     #   recursion finishes, reset card selections, clear any display text or tracking lists, and
     #   update the visual layout of the player's hand.
     def discardCards(self, removeFromHand: bool):
-        self.updateCards(400, 520, self.cards, self.hand, scale=1.2)
+        if removeFromHand:
+            if len(self.cardsSelectedList) > 0:
+                card_to_remove = self.cardsSelectedList.pop()
+                self.hand.remove(card_to_remove)
+                self.used.append(card_to_remove)
+                self.discardCards(removeFromHand=True)
+
+            self.discardCards(False)
+
+        if len(self.hand) < 8:
+            new_card = self.deck.pop()
+            self.hand.append(new_card)
+            self.discardCards(removeFromHand=False)
+
+        self.cardsSelectedRect = {}
+        self.playedHandNameList = ['']
+        self.SortCards()
+        self.updateCards(400, 520, self.cards, self.hand,scale=1.2)
+
