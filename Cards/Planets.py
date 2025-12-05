@@ -30,87 +30,15 @@ class PlanetCard:
 #       "Gusty Garden": PlanetCard("Gusty Garden", "levels up galaxy", 6, 15, 7)
 #   Include all planets up to "Sun" to complete the set.
 #   These cards will be used in the shop and gameplay systems to upgrade specific poker hands.
-
 PLANETS = {
-    'Mercury': PlanetCard(
-        "Mercury",
-        "Increases High Card hand value",
-        2,
-        10,
-        1,
-        image = pygame.image.load('../graphics/cards/Planets/PlanetMercury.png'),
-        isActive = True
-    ),
-    'Venus': PlanetCard(
-        "Venus",
-        "Increases One Pair hand value",
-        2,
-        15,
-        1,
-        image = pygame.image.load('../graphics/cards/Planets/PlanetVenus.png'),
-        isActive = True
-    ),
-    'Earth': PlanetCard(
-        "Earth",
-        "Increases Two Pair hand value",
-        2,
-        15,
-        2,
-        image = pygame.image.load('../graphics/cards/Planets/PlanetEarth.png'),
-        isActive = True
-    ),
-    'Mars': PlanetCard(
-        "Mars",
-        "Increases Three Of a Kind hand value",
-        2,
-        25,
-        2,
-        image = pygame.image.load('../graphics/cards/Planets/PlanetMars.png'),
-        isActive = True
-    ),
-    'Jupiter': PlanetCard(
-        "Jupiter",
-        "Increases Straight hand value",
-        3,
-        25,
-        3,
-        image = pygame.image.load('../graphics/cards/Planets/PlanetJupiter.png'),
-        isActive = True
-    ),
-    'Saturn': PlanetCard(
-        'Saturn',
-        "Increases Flush hand value",
-        3,
-        30,
-        3,
-        image = pygame.image.load('../graphics/cards/Planets/PlanetSaturn.png'),
-        isActive = True
-    ),
-    'Uranus': PlanetCard(
-        "Uranus",
-        "Increases Full House hand value",
-        3,
-        35,
-        3,
-        image = pygame.image.load('../graphics/cards/Planets/PlanetUranus.png'),
-        isActive = True
-    ),
-    'Neptune': PlanetCard(
-        "Neptune",
-        "Increases Four Of a Kind hand value",
-        3,
-        40,
-        4,
-        image = pygame.image.load('../graphics/cards/Planets/PlanetNeptune.png'),
-        isActive = True
-    ),
-    'Sun': PlanetCard(
-        "Sun",
-        "Increases all hands value",
-        12,
-        30,
-        2,
-        image = pygame.image.load('../graphics/cards/Planets/PlanetSun.png'),
-        isActive = True
-    )
+    "Mercury": PlanetCard("Mercury", "levels up High Card", 2, 10, 1),
+    "Venus": PlanetCard("Venus", "levels up One Pair", 2, 15, 1),
+    "Earth": PlanetCard("Earth", "levels up Two Pair", 2, 15, 2),
+    "Mars": PlanetCard("Mars", "levels up Three of a Kind", 2, 25, 2),
+    "Jupiter": PlanetCard("Jupiter", "levels up Straight", 3, 25, 3),
+    "Saturn": PlanetCard("Saturn", "levels up Flush", 3, 30, 3),
+    "Uranus": PlanetCard("Uranus", "levels up Full House", 3, 35, 3),
+    "Neptune": PlanetCard("Neptune", "levels up Four of a Kind", 3, 40, 4),
+    "Sun": PlanetCard("Sun", "levels up all hands", 12, 30, 2)
 }
+
