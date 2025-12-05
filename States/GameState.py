@@ -806,9 +806,77 @@ class GameState(State):
         #       # Apply that Joker’s effect
         #       self.activated_jokers.add("joker card name")
         #   The last line ensures the Joker is visibly active and its effects are properly applied.
+        two = Rank.TWO
+        three = Rank.THREE
+        four = Rank.FOUR
+        five = Rank.FIVE
+        six = Rank.SIX
+        seven = Rank.SEVEN
+        eight = Rank.EIGHT
+        nine = Rank.NINE
+        ten = Rank.TEN
+        jack = Rank.JACK
+        queen = Rank.QUEEN
+        king = Rank.KING
+        ace = Rank.ACE
 
         procrastinate = False
+        if "The Joker" in owned:
+            hand_mult += 4
+            self.activated_jokers.add("The Joker")
 
+        if "Michael Myers" in owned:
+            random_mult = random.randint(0, 23)
+            hand_mult += random_mult
+            self.activated_jokers.add("Michael Myers")
+
+        if "Fibonacci" in owned:
+            fib_cards = [two, three, five, eight, ace]
+            used = False
+            for card in self.cardsSelectedList:
+                if card.rank in fib_cards:
+                    hand_mult += 8
+                    used = True
+            if used:
+                self.activated_jokers.add("Fibonacci")
+
+        if "Gauntlet" in owned:
+            total_chips += 250
+            self.playerInfo.amountOfHands -= 2
+            self.activated_jokers.add("Gauntlet")
+
+        if "Ogre" in owned:
+            joker_amount_mult = len(self.playerJokers) * 3
+            hand_mult += joker_amount_mult
+            self.activated_jokers.add("Ogre")
+
+        if "StrawHat" in owned:
+            hands_played = max(0, len(self.playedHandNameList) - 1)
+            bonus = max(0, 100 - (5 * hands_played))
+            total_chips += bonus
+            self.activated_jokers.add("StrawHat")
+
+        if "Hog Rider" in owned:
+            if hand_name == "Straight":
+                total_chips += 100
+            self.activated_jokers.add("Hog Rider")
+
+        if "? Block" in owned and len(self.cardsSelectedList) == 4:
+            total_chips += 4
+            self.activated_jokers.add("? Block")
+
+        if "Hogwarts" in owned:
+            used = False
+            for card in self.cardsSelectedList:
+                if card.rank == ace:
+                    hand_mult += 4
+                    total_chips += 20
+                    used = True
+            if used:
+                self.activated_jokers.add("Hogwarts")
+        if "802" in owned and self.playerInfo.amountOfHands == 0:
+            procrastinate = True
+            self.activated_jokers.add("802")
         # commit modified player multiplier and chips
         self.playerInfo.playerMultiplier = hand_mult
         self.playerInfo.playerChips = total_chips
