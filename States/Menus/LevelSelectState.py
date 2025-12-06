@@ -122,6 +122,7 @@ class LevelSelectState(State):
             "The Hook": "Discards 2 random cards held in hand after every played hand",
             "The Water": "Start with 0 discards",
             "The Manacle": "-1 hand size"
+
         }
 
         # Dict of boss with their color schemes
