@@ -423,8 +423,15 @@ class ShopState(State):
                     price = None
                 if price is None or price < 4 or price == 12:
                     if price:
-                        self.playerInfo.playerMoney -= price
-                        self.buy_sound.play()
+                        if self.playerInfo.playerMoney >= price:
+                            self.playerInfo.playerMoney -= price
+                            self.buy_sound.play()
+                        else:
+                            print("[SHOP] Not enough money to buy planet.")
+                            self.joker_for_buy = None
+                            self.buy_rect = None
+                            self.selected_info = None
+                            return
                     if joker_obj in self.shop_random_jokers:
                         self.shop_random_jokers.remove(joker_obj)
                     else:
