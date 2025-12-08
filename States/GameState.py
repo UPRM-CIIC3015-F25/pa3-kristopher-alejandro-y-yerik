@@ -27,16 +27,16 @@ class GameState(State):
         self.deck = State.deckManager.shuffleDeck(State.deckManager.createDeck(self.playerInfo.levelManager.curSubLevel))
         self.hand = State.deckManager.dealCards(self.deck, 8)
         self.cards = {}
-
+        
         self.jokerDeck = State.deckManager.createJokerDeck()
         self.playerJokers = []
         self.jokers = {}
         # track which jokers activated for the current played hand (used to offset their draw)
         self.activated_jokers = set()
-
+        
         # for joker in self.jokerDeck:
         #     print(joker.name)
-
+        
         self.cardsSelectedList = []
         self.cardsSelectedRect = {}
         self.playedHandNameList = ['']
@@ -534,12 +534,10 @@ class GameState(State):
     #     - Recursive calculation of the overkill bonus (based on how much score exceeds the target)
     #     - A clear base case to stop recursion when all parts are done
     #   Avoid any for/while loops — recursion alone must handle the repetition.
-    # TODO (TASK 7) - Recursive gold reward calculation
     def calculate_gold_reward(self, playerInfo, stage=0):
-        sm_gold: int = 4
-        big_gold: int = 8
-        boss_gold: int = 11
-
+        sm_gold = 4
+        big_gold = 8
+        boss_gold = 10
 
         if stage > 0:
             score = playerInfo.score
@@ -551,20 +549,21 @@ class GameState(State):
             if bonus > 5:
                 bonus = 5
 
-
             return int(round(bonus, 0)) + stage
-
 
         blind = playerInfo.levelManager.curSubLevel.blind
         match blind.value:
             case Blind.SMALL.value:
                 return self.calculate_gold_reward(playerInfo, sm_gold)
+
             case Blind.BIG.value:
                 return self.calculate_gold_reward(playerInfo, big_gold)
+
             case Blind.BOSS.value:
                 return self.calculate_gold_reward(playerInfo, boss_gold)
 
-        return self.calculate_gold_reward(playerInfo,sm_gold)
+        return self.calculate_gold_reward(playerInfo, sm_gold)
+
     def updateCards(self, posX, posY, cardsDict, cardsList, scale=1.5, spacing=90, baseYOffset=-20, leftShift=40):
         cardsDict.clear()
         for i, card in enumerate(cardsList):
@@ -616,7 +615,7 @@ class GameState(State):
         for card, rect in self.cards.items():
             if rect.collidepoint(mousePos):
                 break
-
+    
     def drawCardTooltip(self):
         mousePos = pygame.mouse.get_pos()
         for card, rect in self.cards.items():
@@ -644,7 +643,7 @@ class GameState(State):
                 tooltip_y = rect.y - tooltip_h - 10
                 self.screen.blit(tooltip_surf, (tooltip_x, tooltip_y))
                 break
-
+    
     # -------- Play Hand Logic -----------
     def playHand(self):
         if self.playerInfo.amountOfHands == 0: # Check if last hand and failed the round
