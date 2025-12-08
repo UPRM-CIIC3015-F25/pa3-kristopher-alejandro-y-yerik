@@ -5,7 +5,7 @@ from States.Core.StateClass import State
 from Cards.Card import Suit, Rank
 from States.Core.PlayerInfo import PlayerInfo
 from Deck.HandEvaluator import evaluate_hand
-
+from Levels.SubLevel import Blind
 
 HAND_SCORES = {
     "Straight Flush": {"chips": 100, "multiplier": 8, "level": 1},
@@ -27,16 +27,16 @@ class GameState(State):
         self.deck = State.deckManager.shuffleDeck(State.deckManager.createDeck(self.playerInfo.levelManager.curSubLevel))
         self.hand = State.deckManager.dealCards(self.deck, 8)
         self.cards = {}
-        
+
         self.jokerDeck = State.deckManager.createJokerDeck()
         self.playerJokers = []
         self.jokers = {}
         # track which jokers activated for the current played hand (used to offset their draw)
         self.activated_jokers = set()
-        
+
         # for joker in self.jokerDeck:
         #     print(joker.name)
-        
+
         self.cardsSelectedList = []
         self.cardsSelectedRect = {}
         self.playedHandNameList = ['']
@@ -187,7 +187,7 @@ class GameState(State):
             self.nextState = "ShopState"
 
             return
-        
+
         # Handle boss level music switching
         bossName = self.playerInfo.levelManager.curSubLevel.bossLevel
         if bossName and not self.isBossActive:
@@ -196,7 +196,7 @@ class GameState(State):
         elif not bossName and self.isBossActive:
             self.isBossActive = False
             self.switchToNormalTheme()
-            
+
         # Handle play hand timing
         if self.playHandActive and self.playHandStartTime > 0:
             curTime = pygame.time.get_ticks()
@@ -534,39 +534,37 @@ class GameState(State):
     #     - Recursive calculation of the overkill bonus (based on how much score exceeds the target)
     #     - A clear base case to stop recursion when all parts are done
     #   Avoid any for/while loops — recursion alone must handle the repetition.
+    # TODO (TASK 7) - Recursive gold reward calculation
     def calculate_gold_reward(self, playerInfo, stage=0):
-        if stage == 0:
-            curSub = playerInfo.levelManager.curSubLevel
+        sm_gold: int = 4
+        big_gold: int = 8
+        boss_gold: int = 11
 
-            if curSub.blind.name == "SMALL":
-                base_gold = 4
-            elif curSub.blind.name == "BIG":
-                base_gold = 8
-            else:
-                base_gold = 10
-            return base_gold + self.calculate_gold_reward(playerInfo, stage + 1)
 
-        elif stage == 1:
-            curSub = playerInfo.levelManager.curSubLevel
-            target = curSub.score
-            score = playerInfo.roundScore
+        if stage > 0:
+            score = playerInfo.score
+            target = playerInfo.levelManager.curSubLevel.blind.value
+            bonus = ((score - target) / target) * 5
 
-            difference = score - target
-
-            if difference <= 0:
+            if bonus < 0:
                 bonus = 0
-            else:
-                ratio = difference / target
-                raw_bonus = int(ratio * 5)
-                if raw_bonus > 5:
-                    bonus = 5
-                else:
-                    bonus = raw_bonus
-            return bonus + self.calculate_gold_reward(playerInfo, stage + 1)
-        elif stage == 2:
-            return 0
-        return 0
+            if bonus > 5:
+                bonus = 5
 
+
+            return int(round(bonus, 0)) + stage
+
+
+        blind = playerInfo.levelManager.curSubLevel.blind
+        match blind.value:
+            case Blind.SMALL.value:
+                return self.calculate_gold_reward(playerInfo, sm_gold)
+            case Blind.BIG.value:
+                return self.calculate_gold_reward(playerInfo, big_gold)
+            case Blind.BOSS.value:
+                return self.calculate_gold_reward(playerInfo, boss_gold)
+
+        return self.calculate_gold_reward(playerInfo,sm_gold)
     def updateCards(self, posX, posY, cardsDict, cardsList, scale=1.5, spacing=90, baseYOffset=-20, leftShift=40):
         cardsDict.clear()
         for i, card in enumerate(cardsList):
@@ -618,7 +616,7 @@ class GameState(State):
         for card, rect in self.cards.items():
             if rect.collidepoint(mousePos):
                 break
-    
+
     def drawCardTooltip(self):
         mousePos = pygame.mouse.get_pos()
         for card, rect in self.cards.items():
@@ -646,7 +644,7 @@ class GameState(State):
                 tooltip_y = rect.y - tooltip_h - 10
                 self.screen.blit(tooltip_surf, (tooltip_x, tooltip_y))
                 break
-    
+
     # -------- Play Hand Logic -----------
     def playHand(self):
         if self.playerInfo.amountOfHands == 0: # Check if last hand and failed the round
