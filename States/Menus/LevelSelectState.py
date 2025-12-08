@@ -91,6 +91,16 @@ class LevelSelectState(State):
                 #   on which boss is active.
                 #   Finally, make sure to reset the player’s round score to 0 at the end of this setup.
                 #   Avoid unnecessary repetition—use clear condition structure to make the logic readable.
+                boss_name = lm.curSubLevel.bossLevel
+                if boss_name == "The Needle":
+                    self.playerInfo.amountOfHands = 1
+                elif boss_name == "The Water":
+                    self.playerInfo.amountOfDiscards = 0
+                elif boss_name == "The Manacle":
+                    self.playerInfo.amountOfHands -= 1
+                else:
+                    self.playerInfo.amountOfDiscards = 4
+                    self.playerInfo.amountOfHands = 4
 
 
                 self.playerInfo.roundScore = 0

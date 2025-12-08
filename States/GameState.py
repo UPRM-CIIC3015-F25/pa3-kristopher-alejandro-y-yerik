@@ -534,49 +534,38 @@ class GameState(State):
     #     - Recursive calculation of the overkill bonus (based on how much score exceeds the target)
     #     - A clear base case to stop recursion when all parts are done
     #   Avoid any for/while loops — recursion alone must handle the repetition.
-    def calculate_gold_reward(self, playerInfo, stage=0, base_gold=0, score=0, target=0):
+    def calculate_gold_reward(self, playerInfo, stage=0):
         if stage == 0:
-            sublevel = playerInfo.levelManager.curSubLevel
-            if hasattr(sublevel, "blindType"):
-                blind_type = sublevel.blindType
-            elif hasattr(sublevel, "blind_type"):
-                blind_type = sublevel.blind_type
-            elif hasattr(sublevel, "blind"):
-                blind_type = sublevel.blind
-            else:
-                blind_type = "SMALL"
+            curSub = playerInfo.levelManager.curSubLevel
 
-            if blind_type == "SMALL":
+            if curSub.blind.name == "SMALL":
                 base_gold = 4
-            elif blind_type == "BIG":
+            elif curSub.blind.name == "BIG":
                 base_gold = 8
-            elif blind_type == "BOSS":
-                base_gold = 10
             else:
-                base_gold = 4
+                base_gold = 10
+            return base_gold + self.calculate_gold_reward(playerInfo, stage + 1)
 
+        elif stage == 1:
+            curSub = playerInfo.levelManager.curSubLevel
+            target = curSub.score
             score = playerInfo.roundScore
-            target = sublevel.score
 
-            return self.calculate_gold_reward(playerInfo, stage=1, base_gold=base_gold, score=score, target=target)
+            difference = score - target
 
-        if stage == 1:
-            if target <= 0:
-                return base_gold
-            over = score - target
-            if over <= 0:
+            if difference <= 0:
                 bonus = 0
             else:
-                ratio = over/target
-                raw_bonus = ratio * 5
-                if raw_bonus < 0:
-                    raw_bonus = 0
+                ratio = difference / target
+                raw_bonus = int(ratio * 5)
                 if raw_bonus > 5:
-                    raw_bonus = 5
-                bonus = int(raw_bonus)
-            return base_gold + bonus
-        return base_gold
-
+                    bonus = 5
+                else:
+                    bonus = raw_bonus
+            return bonus + self.calculate_gold_reward(playerInfo, stage + 1)
+        elif stage == 2:
+            return 0
+        return 0
 
     def updateCards(self, posX, posY, cardsDict, cardsList, scale=1.5, spacing=90, baseYOffset=-20, leftShift=40):
         cardsDict.clear()
